@@ -17,7 +17,26 @@ async function getWeather() {
   );
 
   const result = await response.json();
-  console.log("result: ", result);
+
+  if (result.cod === "404") {
+    alert(result.message);
+    wrapper.style.display = "block";
+
+    loader.style.display = "none";
+    return;
+  }
+
+  const responseImage = await fetch(
+    `https://api.teleport.org/api/urban_areas/slug:${city}/images/`
+  );
+  const cityImage = await responseImage.json();
+
+  if (cityImage.photos) {
+    document.body.style.background = `url(${cityImage.photos[0].image.web})`;
+  } else {
+    document.body.style.background = `url(https://images.ctfassets.net/hrltx12pl8hq/6TIZLa1AKeBel0yVO7ReIn/1fc0e2fd9fcc6d66b3cc733aa2547e11/weather-images.jpg?fit=fill&w=1200&h=630)`;
+  }
+
   wrapper.style.display = "block";
   loader.style.display = "none";
 
@@ -73,10 +92,10 @@ async function successCallback(location) {
 
 async function errorCallback(error) {
   const response = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=Токтогул&appid=${API_KEY}&units=metric&lang=ru`
+    `https://api.openweathermap.org/data/2.5/weather?q=Милан&appid=${API_KEY}&units=metric&lang=ru`
   );
 
-  const city55 = "Токтогул";
+  const city55 = "Милан";
   const result = await response.json();
   wrapper.style.display = "block";
   loader.style.display = "none";
@@ -91,8 +110,3 @@ async function errorCallback(error) {
   feelh5.innerHTML = `Ощущается как: ${result.main.feels_like}`;
 }
 navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-
-//   if (error.code === 1) {
-//     alert("Пользователь запретил использовать геолокацию.");
-//   }
-// }
